@@ -38,7 +38,7 @@ namespace ariel {
 	ifstream& NumberWithUnits::read_units(ifstream& file){
 	    
 	   counterForClass=0;
-
+        
             if (!file) {
 				cout<<"FAILED TO READ THE FILE !!"<<endl;
                 exit(1);
@@ -88,7 +88,7 @@ namespace ariel {
 	}
 	
 	
-	    static istream& getAndCheckNextCharIs(istream& input, char expectedChar) {
+	static istream& getAndCheckNextCharIs(istream& input, char expectedChar) {
     char actualChar=0;
     input >> actualChar;
     if (!input){ 
@@ -102,7 +102,7 @@ namespace ariel {
 }
 
     istream& operator>> (istream& input, NumberWithUnits& nwu){
-        
+               
         char ch=0;
         string type;
         double measure=1;
@@ -111,32 +111,54 @@ namespace ariel {
         input>>measure;
         // measure will have the amount units of the given input
         //Check measure is a number
-
-        //check chFirst == '['
-        if(!getAndCheckNextCharIs(input,'[')){
-            error=true;
+        input>>ch;
+        if(ch != '['){
+            error =true;
         }
         input>>type;
-        if(!getAndCheckNextCharIs(input,']')){
-            error=true;
+        if(type.at(type.length()-1) == ']'){
+        string C = type.substr(0,type.length()-1);
+        ch = type.at(type.length()-1);
+        if(NumberWithUnits::checkForObjectClass(C) == -1 || ch != ']'){
+            error = true;
         }
+        type=C;
+        }
+        else{
+            input>>ch;
+            if(NumberWithUnits::checkForObjectClass(type) == -1 || ch != ']'){
+                error=true;
+            }
+        }
+        // input>>ch;
+        // if(ch != ']'){
+        //     error = true;
+        // }
+        //check chFirst == '['
+        // if(!getAndCheckNextCharIs(input,'[')){
+        //     error=true;
+        // }
+        // //input>>type;
+        // if(!getAndCheckNextCharIs(input,']')){
+        //     error=true;
+        // }
         
-         if (error)
-          {
-		// rewind on error
-		auto errorState = input.rdstate(); // remember error state
-		input.clear(); // clear error so seekg will work
-		input.seekg(startPosition); // rewind
-		input.clear(errorState); // set back the error flag
-   	 }
-	if (!error)
-	{
-		nwu._measure=measure;
-		nwu._type=type;
-		int temp = NumberWithUnits::checkForObjectClass(type);
-		nwu._class = temp;
-		
-	}
+         if (error) {
+        // rewind on error
+        string str = "Invalid input";
+
+        throw std::invalid_argument(str);
+        auto errorState = input.rdstate(); // remember error state
+        input.clear(); // clear error so seekg will work
+        input.seekg(startPosition); // rewind
+        input.clear(errorState); // set back the error flag
+    }
+    
+    nwu._measure=measure;
+    nwu._type=type;
+    nwu._class = NumberWithUnits::checkForObjectClass(type);
+    
+    
     return input;
     }
 	
@@ -144,7 +166,7 @@ namespace ariel {
 	
 	
         
-        double NumberWithUnits::convertFromTo(const NumberWithUnits& from,const NumberWithUnits& to){
+    double NumberWithUnits::convertFromTo(const NumberWithUnits& from,const NumberWithUnits& to){
             // we want how many measure units in from to to
             // from = X*to
             double product=1;
@@ -177,8 +199,7 @@ namespace ariel {
                     
                 }
             // FROM as a value of the HM
-            flag = true;
-            for (it = hm.begin(); it != hm.end() && flag; it++)
+            for (it = hm.begin(); it != hm.end(); it++)
                 {
                     if(it->first == from._type){
                         temp = from._type;
@@ -187,7 +208,6 @@ namespace ariel {
                                 return product;
                             }
                             if(hm.find(temp) == hm.end()){
-                                product=-1;
                                 break;
                             }
                             product*= (1/hm[temp]._m);
@@ -201,9 +221,51 @@ namespace ariel {
                     }
                     
                 }
-                return product;
+                return -1;
         }
-        
+
+        double NumberWithUnits::convertFromToASCombination(const NumberWithUnits& from,const NumberWithUnits& to){
+            // we want how many measure units in from to to
+            // from = X*to
+            double product=1;
+            string temp;
+            map<string, iCell>::iterator it;
+            //Combination of KEY ~~ VALUE
+            for (it = hm.begin(); it != hm.end(); it++)
+                {
+                    if(it->first == to._type){
+                        temp = it->first;
+                        product*=hm[temp]._m;
+                        temp = hm[temp]._to;
+                        while(true){
+                            /// FIND temp AS a value and get its KEY
+                            for(it = hm.begin();it!=hm.end() ; it++){
+                                if(it->second._to == temp && it->first != to._type){
+                                    string bridge = it->first;
+                                    product=hm[bridge]._m/product;
+                                    while (true)
+                                    {
+                                        if(hm.find(bridge) == hm.end()){
+                                            return product;
+                                        }
+                                        if(bridge == from._type){
+                                            return product;
+                                        }
+                                        bridge = hm[bridge]._to;
+                                        product=hm[bridge]._m/product;
+                                    }
+                                    
+                                }
+                            }
+
+                            
+                        }
+
+                    }
+                    
+                }
+            return -1;
+        }
         
      ostream& operator<<(ostream& os, const NumberWithUnits& nwu) {
          os << nwu._measure << '[' << nwu._type << ']';
@@ -213,7 +275,14 @@ namespace ariel {
         NumberWithUnits toReturn{(-1)*nwu._measure,nwu._type};
         return toReturn;
     }
+    NumberWithUnits operator+ (const NumberWithUnits& nwu){
+        return nwu;
+    }
     NumberWithUnits operator* (double a,const NumberWithUnits& nwu1){
+        NumberWithUnits toReturn{(a)*nwu1._measure,nwu1._type};
+        return toReturn;
+    }
+    NumberWithUnits operator* (const NumberWithUnits& nwu1,double a){
         NumberWithUnits toReturn{(a)*nwu1._measure,nwu1._type};
         return toReturn;
     }
@@ -226,9 +295,15 @@ namespace ariel {
             str+="]";
             throw std::invalid_argument(str);
         }
+        if(nwu1._type == nwu2._type){
+            NumberWithUnits toReturn{(nwu1._measure+nwu2._measure),nwu1._type};
+            return toReturn;
+        }
         // convert nwu2 to nwu1
         double rate = NumberWithUnits::convertFromTo(nwu2,nwu1);
-        NumberWithUnits toReturn{(nwu1._measure+(1/rate)*nwu2._measure),nwu1._type};
+        double first = rate!=-1?((1/rate)*nwu2._measure):(nwu1._measure)*(1/NumberWithUnits::convertFromToASCombination(nwu1,nwu2));
+        //double first = ((rate)*nwu1._measure);
+        NumberWithUnits toReturn{nwu1._measure+first,nwu1._type};
         return toReturn;
     }
     NumberWithUnits operator-(const NumberWithUnits& nwu1, const NumberWithUnits &nwu2){
@@ -240,8 +315,15 @@ namespace ariel {
             str+="]";
             throw std::invalid_argument(str);
         }
-        double rate = NumberWithUnits::convertFromTo(nwu2,nwu1);
-        NumberWithUnits toReturn{(nwu1._measure-(1/rate)*nwu2._measure),nwu1._type};
+        if(nwu1._type == nwu2._type){
+            NumberWithUnits toReturn{(nwu1._measure-nwu2._measure),nwu1._type};
+            return toReturn;
+        }
+        
+       double rate = NumberWithUnits::convertFromTo(nwu2,nwu1);
+        double first = rate!=-1?((1/rate)*nwu2._measure):(nwu1._measure)*(1/NumberWithUnits::convertFromToASCombination(nwu1,nwu2));
+        //double first = ((rate)*nwu1._measure);
+        NumberWithUnits toReturn{nwu1._measure-first,nwu1._type};
         return toReturn;
     }
     bool operator<(const NumberWithUnits& nwu1, const NumberWithUnits &nwu2){
@@ -253,10 +335,14 @@ namespace ariel {
             str+="]";
             throw std::invalid_argument(str);
         }
+        if(nwu1._type == nwu2._type){
+            return (nwu1._measure<nwu2._measure);
+        }
         double rate = NumberWithUnits::convertFromTo(nwu2,nwu1);
-        double first = ((rate)*nwu1._measure);
+        double first = rate!=-1?((rate)*nwu1._measure):(nwu1._measure)*(NumberWithUnits::convertFromToASCombination(nwu1,nwu2));
+        //double first = ((rate)*nwu1._measure);
         double second = nwu2._measure;
-        return first<second;
+        return (second-first>EPS);
     }
     bool operator>(const NumberWithUnits& nwu1, const NumberWithUnits &nwu2){
         if(nwu1._class != nwu2._class){
@@ -267,10 +353,14 @@ namespace ariel {
             str+="]";
             throw std::invalid_argument(str);
         }
+        if(nwu1._type == nwu2._type){
+            return (nwu1._measure>nwu2._measure);
+        }
         double rate = NumberWithUnits::convertFromTo(nwu2,nwu1);
-        double first = ((rate)*nwu1._measure);
+        double first = rate!=-1?((rate)*nwu1._measure):(nwu1._measure)*(NumberWithUnits::convertFromToASCombination(nwu1,nwu2));
+        //double first = ((rate)*nwu1._measure);
         double second = nwu2._measure;
-        return first>second;
+        return (first-second>EPS);
     }
     bool operator>=(const NumberWithUnits& nwu1, const NumberWithUnits &nwu2){
         if(nwu1._class != nwu2._class){
@@ -281,25 +371,32 @@ namespace ariel {
             str+="]";
             throw std::invalid_argument(str);
         }
+        if(nwu1._type == nwu2._type){
+            return (nwu1._measure>=nwu2._measure);
+        }
         double rate = NumberWithUnits::convertFromTo(nwu2,nwu1);
-        double first = ((rate)*nwu1._measure);
+        double first = rate!=-1?((rate)*nwu1._measure):(nwu1._measure)*(NumberWithUnits::convertFromToASCombination(nwu1,nwu2));
+        //double first = ((rate)*nwu1._measure);
         double second = nwu2._measure;
-        return first>=second;
+        return (first>=second);
     }
     bool operator<=(const NumberWithUnits& nwu1, const NumberWithUnits &nwu2){
-        return (nwu1==nwu2 || nwu1 < nwu2);
-        // if(nwu1._class != nwu2._class){
-        //     string str = "Units do not match - [";
-        //     str += nwu2._type;
-        //     str += "] cannot be converted to [";
-        //     str+= nwu1._type;
-        //     str+="]";
-        //     throw std::invalid_argument(str);
-        // }
-        // double rate = NumberWithUnits::convertFromTo(nwu2,nwu1);
-        // double first = ((rate)*nwu1._measure);
-        // double second = nwu2._measure;
-        // return first<=second;
+         if(nwu1._class != nwu2._class){
+            string str = "Units do not match - [";
+            str += nwu2._type;
+            str += "] cannot be converted to [";
+            str+= nwu1._type;
+            str+="]";
+            throw std::invalid_argument(str);
+        }
+        if(nwu1._type == nwu2._type){
+            return (nwu1._measure<=nwu2._measure);
+        }
+        double rate = NumberWithUnits::convertFromTo(nwu2,nwu1);
+        double first = rate!=-1?((rate)*nwu1._measure):(nwu1._measure)*(NumberWithUnits::convertFromToASCombination(nwu1,nwu2));
+        //double first = ((rate)*nwu1._measure);
+        double second = nwu2._measure;
+        return (first<=second);
     }
     bool operator==(const NumberWithUnits& nwu1, const NumberWithUnits &nwu2){
         
@@ -316,9 +413,9 @@ namespace ariel {
             return (abs(nwu1._measure - nwu2._measure) < EPS);
         }
         double rate = NumberWithUnits::convertFromTo(nwu2,nwu1);
-        double first = ((rate)*nwu1._measure);
+        double first = rate!=-1?((rate)*nwu1._measure):(nwu1._measure)*(NumberWithUnits::convertFromToASCombination(nwu1,nwu2));
         double second = nwu2._measure;
-        return (first==second);
+        return (abs(first-second)<EPS);
     }
 
     bool operator!=(const NumberWithUnits &nwu1, const NumberWithUnits &nwu2){
@@ -331,9 +428,9 @@ namespace ariel {
             throw std::invalid_argument(str);
         }
         double rate = NumberWithUnits::convertFromTo(nwu2,nwu1);
-        double first = ((rate)*nwu1._measure);
+        double first = rate!=-1?((rate)*nwu1._measure):(nwu1._measure)*(NumberWithUnits::convertFromToASCombination(nwu1,nwu2));
         double second = nwu2._measure;
-        return first!=second;
+        return (abs(first-second)>EPS);
     }
     static istream& getAndNextCharIs(istream& input, char expectedChar) {
     char actualChar='0';

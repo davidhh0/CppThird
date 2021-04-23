@@ -51,5 +51,8 @@ int main() {
     cout << ex.what() << endl; // Prints "Units do not match - [m] cannot be converted to [kg]"
   }
   cout << "End of demo!" << endl;
+  NumberWithUnits A{4, "m"};
+  NumberWithUnits B{5, "km"};
+  cout<<(A+B)<<endl;
   return 0;
 }

@@ -31,12 +31,19 @@ class NumberWithUnits{
 		int _class;
 		static int checkForObjectClass(const string& type);
 		static double convertFromTo(const NumberWithUnits& from,const NumberWithUnits& to);
+        static double convertFromToASCombination(const NumberWithUnits& from,const NumberWithUnits& to);
 	public:
 		
 	
 	NumberWithUnits(double measure,const string& type);
 	static ifstream& read_units(ifstream& file);
 	NumberWithUnits& operator+=(const NumberWithUnits nwu1){
+        if(_type == nwu1._type){
+            double temp = _measure + nwu1._measure;
+            _measure=temp;
+            return *this;
+        }
+          
           if(nwu1._class != _class){
             string str = "Units do not match - [";
             str += _type;
@@ -44,13 +51,20 @@ class NumberWithUnits{
             str+= nwu1._type;
             str+="]";
             throw std::invalid_argument(str);
-        }   
-        double rate = convertFromTo(NumberWithUnits{_measure,_type},nwu1);
+        }
+        NumberWithUnits me = NumberWithUnits{_measure,_type};
+        double rate = convertFromTo(me,nwu1);
+        double first = rate!=-1?((rate)*nwu1._measure):(nwu1._measure)*(NumberWithUnits::convertFromToASCombination(nwu1,me));
         double temp = _measure + (rate*nwu1._measure);
          _measure = temp;
          return *this;
         }
     NumberWithUnits& operator-=(const NumberWithUnits nwu1){
+        if(_type == nwu1._type){
+            double temp = _measure - nwu1._measure;
+            _measure=temp;
+            return *this;
+        }
         if(nwu1._class != this->_class){
             string str = "Units do not match - [";
             str += _type;
@@ -59,7 +73,9 @@ class NumberWithUnits{
             str+="]";
             throw std::invalid_argument(str);
         }
-        double rate = convertFromTo(NumberWithUnits{_measure,_type},nwu1);
+        NumberWithUnits me = NumberWithUnits{_measure,_type};
+        double rate = convertFromTo(me,nwu1);
+        double first = rate!=-1?((rate)*nwu1._measure):(nwu1._measure)*(NumberWithUnits::convertFromToASCombination(nwu1,me));
         double temp = _measure - (rate*nwu1._measure);
          _measure = temp;
          return *this;
@@ -75,7 +91,9 @@ class NumberWithUnits{
     	// --------------Friend methods---------------------- 
         friend ostream& operator<<(ostream& os, const NumberWithUnits& nwu1);
         friend NumberWithUnits operator- (const NumberWithUnits& nwu);
+        friend NumberWithUnits operator+ (const NumberWithUnits& nwu);
         friend NumberWithUnits operator* (double a,const NumberWithUnits& nwu1);
+        friend NumberWithUnits operator* (const NumberWithUnits& nwu1,double a);
         friend NumberWithUnits operator+(const NumberWithUnits& nwu1, const NumberWithUnits &nwu2);
         friend NumberWithUnits operator-(const NumberWithUnits& nwu1, const NumberWithUnits &nwu2);
         friend bool operator>=(const NumberWithUnits& nwu1, const NumberWithUnits &nwu2);
@@ -84,7 +102,7 @@ class NumberWithUnits{
         friend bool operator<(const NumberWithUnits& nwu1, const NumberWithUnits &nwu2);
         friend bool operator==(const NumberWithUnits& nwu1, const NumberWithUnits &nwu2);
         friend bool operator!=(const NumberWithUnits &nwu1, const NumberWithUnits &nwu2);
-        NumberWithUnits operator++(){
+        NumberWithUnits& operator++(){
             _measure++;
             return *this;
 
@@ -94,7 +112,7 @@ class NumberWithUnits{
             _measure++;
             return copy;
         }
-        NumberWithUnits operator--(){
+        NumberWithUnits& operator--(){
             _measure--;
             return *this;
         }

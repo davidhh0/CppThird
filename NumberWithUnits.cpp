@@ -23,6 +23,8 @@ namespace ariel {
        }
        
        int NumberWithUnits::checkForObjectClass(const string& type){
+           // This function returns the class of the specified type, 
+           // for example -> weight has class A and distance has class B , A!=B
             map<string, iCell>::iterator it;
                 for (it = hm.begin(); it != hm.end(); it++)
                 {
@@ -80,9 +82,6 @@ namespace ariel {
                 hm.insert(std::pair<string ,iCell>(from,_aux));
 
             }
-			// cout<<hm["km"]._to<<endl;
-			// cout<<hm["m"]._m<<endl;
-            // cout<<hm["USD"]._m<<endl;
 
             return file;
 	}
@@ -116,6 +115,7 @@ namespace ariel {
             error =true;
         }
         input>>type;
+        // Checking if the last char is ']' and than take the substring
         if(type.at(type.length()-1) == ']'){
         string C = type.substr(0,type.length()-1);
         ch = type.at(type.length()-1);
@@ -124,27 +124,15 @@ namespace ariel {
         }
         type=C;
         }
+        // else: the last char is not ']' which means the next one should be ']'
         else{
             input>>ch;
             if(NumberWithUnits::checkForObjectClass(type) == -1 || ch != ']'){
                 error=true;
             }
         }
-        // input>>ch;
-        // if(ch != ']'){
-        //     error = true;
-        // }
-        //check chFirst == '['
-        // if(!getAndCheckNextCharIs(input,'[')){
-        //     error=true;
-        // }
-        // //input>>type;
-        // if(!getAndCheckNextCharIs(input,']')){
-        //     error=true;
-        // }
-        
+
          if (error) {
-        // rewind on error
         string str = "Invalid input";
 
         throw std::invalid_argument(str);
@@ -162,10 +150,6 @@ namespace ariel {
     return input;
     }
 	
-	
-	
-	
-        
     double NumberWithUnits::convertFromTo(const NumberWithUnits& from,const NumberWithUnits& to){
             // we want how many measure units in from to to
             // from = X*to
@@ -179,9 +163,9 @@ namespace ariel {
                     if(it->first == to._type){
                         temp = it->first;
                         while(true){
-                            // CHECK IF THERE IS hm[temp] !!!!8
+                            // CHECK IF THERE IS hm[temp] !!!!
                             //my_map.find( key ) != my_map.end()
-                            
+        
                             if(hm.find(temp) == hm.end()){
                                 product=1;
                                 flag=false;
@@ -302,7 +286,6 @@ namespace ariel {
         // convert nwu2 to nwu1
         double rate = NumberWithUnits::convertFromTo(nwu2,nwu1);
         double first = rate!=-1?((1/rate)*nwu2._measure):(nwu1._measure)*(1/NumberWithUnits::convertFromToASCombination(nwu1,nwu2));
-        //double first = ((rate)*nwu1._measure);
         NumberWithUnits toReturn{nwu1._measure+first,nwu1._type};
         return toReturn;
     }
@@ -322,7 +305,6 @@ namespace ariel {
         
        double rate = NumberWithUnits::convertFromTo(nwu2,nwu1);
         double first = rate!=-1?((1/rate)*nwu2._measure):(nwu1._measure)*(1/NumberWithUnits::convertFromToASCombination(nwu1,nwu2));
-        //double first = ((rate)*nwu1._measure);
         NumberWithUnits toReturn{nwu1._measure-first,nwu1._type};
         return toReturn;
     }
@@ -340,7 +322,6 @@ namespace ariel {
         }
         double rate = NumberWithUnits::convertFromTo(nwu2,nwu1);
         double first = rate!=-1?((rate)*nwu1._measure):(nwu1._measure)*(NumberWithUnits::convertFromToASCombination(nwu1,nwu2));
-        //double first = ((rate)*nwu1._measure);
         double second = nwu2._measure;
         return (second-first>EPS);
     }
@@ -358,7 +339,6 @@ namespace ariel {
         }
         double rate = NumberWithUnits::convertFromTo(nwu2,nwu1);
         double first = rate!=-1?((rate)*nwu1._measure):(nwu1._measure)*(NumberWithUnits::convertFromToASCombination(nwu1,nwu2));
-        //double first = ((rate)*nwu1._measure);
         double second = nwu2._measure;
         return (first-second>EPS);
     }
@@ -376,7 +356,6 @@ namespace ariel {
         }
         double rate = NumberWithUnits::convertFromTo(nwu2,nwu1);
         double first = rate!=-1?((rate)*nwu1._measure):(nwu1._measure)*(NumberWithUnits::convertFromToASCombination(nwu1,nwu2));
-        //double first = ((rate)*nwu1._measure);
         double second = nwu2._measure;
         return (first>=second);
     }
@@ -394,7 +373,6 @@ namespace ariel {
         }
         double rate = NumberWithUnits::convertFromTo(nwu2,nwu1);
         double first = rate!=-1?((rate)*nwu1._measure):(nwu1._measure)*(NumberWithUnits::convertFromToASCombination(nwu1,nwu2));
-        //double first = ((rate)*nwu1._measure);
         double second = nwu2._measure;
         return (first<=second);
     }

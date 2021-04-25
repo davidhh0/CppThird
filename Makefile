@@ -7,7 +7,7 @@ VALGRIND_FLAGS=-v --leak-check=full --show-leak-kinds=all  --error-exitcode=99
 SOURCES=NumberWithUnits.cpp
 OBJECTS=$(subst .cpp,.o,$(SOURCES))
 
-run: test1 test2 test3
+run: test1 test2 test3 demo
 
 test1: TestRunner.o StudentTest1.o  $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
@@ -32,6 +32,10 @@ StudentTest2.cpp:  # Yair Raviv
 
 StudentTest3.cpp:  # Roei Birger
 	curl https://raw.githubusercontent.com/roei-birger/CPP_course_p3/master/Test.cpp > $@
+
+demo: Demo.o $(OBJECTS)
+	$(CXX) $(CXXFLAGS) $^ -o demo
+
 
 tidy:
 	clang-tidy $(SOURCES) -checks=bugprone-*,clang-analyzer-*,cppcoreguidelines-*,performance-*,portability-*,readability-*,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-owning-memory,-readability-isolate-declaration --warnings-as-errors=-* --

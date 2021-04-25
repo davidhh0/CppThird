@@ -1,20 +1,16 @@
 /**
- * Demo file for the exercise on numbers with units
- *
- * @author Erel Segal-Halevi
- * @since 2019-02
+ * 
+ * My Main for showing my exrecise
+ * Noa Tzur
  */
 
 #include <iostream>
-
-#include <map>
-#include <stdexcept>
-using namespace std;
-#include "NumberWithUnits.hpp"
-#include <string>
 #include <fstream>
 #include <sstream>
+#include <stdexcept>
+using namespace std;
 
+#include "NumberWithUnits.hpp"
 using namespace ariel;
 
 
@@ -275,7 +271,7 @@ void check_operator16(){
     NumberWithUnits n3(10, "km");
 
     cout << "in the same line=> " << "--" << n1 << " = " << --n1 << endl;
-    cout << "in the same line=> " << "------" << n3 << " = " << ----------------n3 << endl;
+    cout << "in the same line=> " << "------" << n3 << " = " << ------n3 << endl;
 }
 
 void check_operator17(){
@@ -303,103 +299,112 @@ int main() {
     ifstream units_file{"units.txt"};
     NumberWithUnits::read_units(units_file);
 
-    std::cout << std::boolalpha;  
+    cout << "This is my MAIN for exercise 3 PART B" << endl ;
+    cout << "Lets get started !! " << endl;
+    cout << "" << endl;
 
-
-    cout << "---------------Operator: + ---------------\n" << endl;
+    cout << "~~~ checking operator+ ~~~\n" << endl;
+    
 
     check_operator1();
     cout << "" << endl;
-    cout<< "----------------------------------------------------------"<<endl;
+    
+    cout << "~~~ checking operator- ~~~\n" << endl;
 
-    cout << "---------------Operator: - ---------------\n" << endl;
     check_operator2();
     cout << "" << endl;
-    cout<< "----------------------------------------------------------"<<endl;
 
-    cout << "---------------Operator: * ---------------\n" << endl;
+    cout << "~~~ checking operator* ~~~\n" << endl;
+
     check_operator3();
     cout << "" << endl;
-    cout<< "----------------------------------------------------------"<<endl;
 
-    cout << "---------------Operator: -= ---------------\n" << endl;
+    cout << "~~~ checking operator-= ~~~\n" << endl;
+
     check_operator4();
     cout << "" << endl;
-    cout<< "----------------------------------------------------------"<<endl;
+    
+    cout << "~~~ checking operator+= ~~~\n" << endl;
 
-    cout << "---------------Operator: += ---------------\n" << endl;
     check_operator5();
     cout << "" << endl;
-    cout<< "----------------------------------------------------------"<<endl;
 
-    cout << "---------------Operator: == ---------------\n" << endl;
+    cout << "~~~ checking operator== ~~~\n" << endl;
+
     check_operator6();
     cout << "" << endl;
-    cout<< "----------------------------------------------------------"<<endl;
 
-    cout << "---------------Operator: != ---------------\n" << endl;
+    cout << "~~~ checking operator!= ~~~\n" << endl;
+
     check_operator7();
     cout << "" << endl;
-    cout<< "----------------------------------------------------------"<<endl;
 
-    cout << "---------------Operator: < ---------------\n" << endl;
+    cout << "~~~ checking operator< ~~~\n" << endl;
+
     check_operator8();
-    cout<< "----------------------------------------------------------"<<endl;
     cout << "" << endl;
 
-    cout << "---------------Operator: > ---------------\n" << endl;
+    cout << "~~~ checking operator> ~~~\n" << endl;
+
     check_operator9();
     cout << "" << endl;
-    cout<< "----------------------------------------------------------"<<endl;
 
-    cout << "---------------Operator: >= ---------------\n" << endl;
+    cout << "~~~ checking operator>= ~~~\n" << endl;
+
     check_operator10();
     cout << "" << endl;
-    cout<< "----------------------------------------------------------"<<endl;
 
-    cout << "---------------Operator: <= ---------------\n" << endl;
+    cout << "~~~ checking operator<= ~~~\n" << endl;
+
     check_operator11();
     cout << "" << endl;
-    cout<< "----------------------------------------------------------"<<endl;
 
+    cout << "~~~ checking operator>> ~~~\n" << endl;
 
-    cout << "---------------Operator: >> ---------------\n" << endl;
     check_operator12();
     cout << "" << endl;
-    cout<< "----------------------------------------------------------"<<endl;
 
-    cout << "---------------Operator: -(unary) ---------------\n" << endl;
+    cout << "~~~ checking operator-(unary) ~~~\n" << endl;
+
     check_operator13();
     cout << "" << endl;
-    cout<< "----------------------------------------------------------"<<endl;
 
-    cout << "---------------Operator: +(unary) ---------------\n" << endl;
+    cout << "~~~ checking operator+(unary) ~~~\n" << endl;
+
     check_operator14();
     cout << "" << endl;
-    cout<< "----------------------------------------------------------"<<endl;
 
-    cout << "---------------Operator: ++(prefix)-----\n" << endl;
+    cout << "~~~ checking operator++(prefix)~~~\n" << endl;
+
     check_operator15();
     cout << "" << endl;
-    cout<< "----------------------------------------------------------"<<endl;
 
-    cout << "---------------Operator: --(prefix) ---------------\n" << endl;
+    cout << "~~~ checking operator--(prefix) ~~~\n" << endl;
+
     check_operator16();
     cout << "" << endl;
-    cout<< "----------------------------------------------------------"<<endl;
 
-    cout << "---------------Operator: ++(postfix) ---------------\n" << endl;
+    cout << "~~~ checking operator++(postfix) ~~~\n" << endl;
+
     check_operator17();
     cout << "" << endl;
-    cout<< "----------------------------------------------------------"<<endl;
 
-    cout << "---------------Operator: --(postfix) ---------------\n" << endl;
+    cout << "~~~ checking operator--(postfix) ~~~\n" << endl;
+
     check_operator18();
     cout << "" << endl;
-	cout<< "----------------------------------------------------------"<<endl;
 
-	
-	return 0;
+
+  return 0;
 }
-  
+
+
+
+
+
+
+
+
+
+
 
